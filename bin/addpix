@@ -1,0 +1,107 @@
+#!/bin/sh
+
+# According to "High Screen Resolution Statistics" by w3schools.com,
+# here are the statistics of browser resolutions:
+#
+# RES       -   % - Cumulative %
+# Lower     -  6% -   6%
+# 1280x720  -  2% -   8%
+# 1024x768  -  2% -  10%
+# 1360x768  -  1% -  11%
+# 1366x768  - 34% -  45%
+# 1280x800  -  3% -  48%
+# 1536x864  -  6% -  54%
+# 1440x900  -  6% -  60%
+# 1600x900  -  5% -  65%
+# 1280x1024 -  4% -  69%
+# 1680x1050 -  3% -  72%
+# 1920x1080 - 18% -  90%
+# 1920x1200 -  2% -  92%
+# 2560x1440 -  2% -  94%
+# Higher    -  6% - 100%
+#
+# Roughly, an image resolution of 1500x1000 will fit well in 90% of the
+# browsers.
+
+
+set -e
+
+
+HEIGHT=1000
+QUALITY=90
+
+
+lspix() {
+    ls "$1"/*.jpg "$1"/*.png 2> /dev/null
+}
+
+makepix()
+{
+    src_dir=${1%/}
+    dst_dir="content/$(basename "$src_dir")"
+
+    echo "Processing images in $src_dir; height=$HEIGHT; quality=$QUALITY"
+    lspix "$src_dir" | while read -r src_path
+    do
+        dst_path="$dst_dir/${src_path##*/}"
+
+        # If destination exists, skip conversion/copy.
+        if [ ! -f "$src_path" ]
+        then
+            echo "Skipping $src_path because it is not a regular file"
+            continue
+        elif [ -e "$dst_path" ]
+        then
+            echo "Skipping $src_path because destination exists"
+            continue
+        fi
+
+        mkdir -p "$dst_dir"
+
+        # Calculate height of source image.
+        h=$(identify -format "%h" "$src_path")
+
+        if printf '%s' "$src_path" | grep -q '.png$'
+        then
+            # If its a PNG image, simply copy it to destination.
+            echo "Copying $src_path => $dst_path"
+            cp -v "$src_path" "$dst_path"
+
+        elif [ "$h" -le "$HEIGHT" ]
+        then
+            # If the source image is already smaller than the desired
+            # height, simply copy it to destination.
+            echo "Copying $src_path => $dst_path"
+            cp -v "$src_path" "$dst_path"
+
+        else
+            # If the source image is larger than the desired height,
+            # convert the image to the desired height.
+            echo "Converting $src_path => $dst_path"
+            convert -resize "x$HEIGHT" -quality "$QUALITY" \
+                    "$src_path" "$dst_path"
+        fi
+    done
+
+    lspix "$src_dir" | cut -d/ -f2- | sed 's/.*\///' | sort -u > /tmp/src.txt
+    lspix "$dst_dir" | cut -d/ -f2- | sed 's/.*\///' | sort -u > /tmp/dst.txt
+
+    echo
+    echo src size: $(du -sh "$src_dir")
+    echo dst size: $(du -sh "$dst_dir")
+    echo
+    echo src files: $(wc -l < /tmp/src.txt)
+    echo dst files: $(wc -l < /tmp/dst.txt)
+    echo
+    diff /tmp/src.txt /tmp/dst.txt
+}
+
+
+main()
+{
+    [ "$#" -ne 1 ] && echo "Usage: $0 DIR" && exit 1
+    makepix "$1"
+}
+
+
+main "$@"

@@ -1,0 +1,10 @@
+# Vim swap files
+*.sw?
+
+# macOS desktop services store.
+.DS_Store
+
+# Generated files.
+venv
+__pycache__/
+_site/

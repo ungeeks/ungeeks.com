@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{{ title }}{{ subtitle }}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width; initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="{{ root }}css/main.css">
+  <link rel="icon" type="image/png" href="{{ root }}favicon.png">
+</head>
+
+<body class="{{ class }}">
+{{ content }}
+
+<hr>
+
+<footer>
+  <nav>
+    <a href="{{ root }}">Albums</a>
+    <a href="https://www.instagram.com/ungeeks/">Instagram</a>
+    <a href="{{ root }}about/">About</a>
+  </nav>
+  <p>&copy; 2013&ndash;{{ current_year }} {{ author }}</p>
+</footer>
+
+</body>
+</html>

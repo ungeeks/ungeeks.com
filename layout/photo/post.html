@@ -1,0 +1,19 @@
+<main>
+  <figure>
+    <div class="widget">
+      <div class="arrow"><a href="{{ prev }}">&laquo;</a></div>
+      <img src="{{ photo }}" alt="">
+      <div class="arrow"><a href="{{ next }}">&raquo;</a></div>
+    </div>
+    <figcaption>{{ story }}</figcaption>
+  </figure>
+  <div class="meta">
+    Taken on {{ date }}
+    <span class="sep">&bull;</span>
+
+    {{ license }}
+    <span class="sep">&bull;</span>
+
+    #{{ index }} of {{ total }} photos from <a href="./">{{ album }}</a>
+  </div>
+</main>
