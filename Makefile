@@ -26,7 +26,7 @@ help:
 
 setup:
 	apt-get update
-	apt-get -y install nginx certbot git make
+	apt-get -y install nginx certbot git make python3-venv
 
 https: http
 	@echo Setting up HTTPS website ...
