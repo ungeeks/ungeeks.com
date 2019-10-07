@@ -34,8 +34,7 @@ a:hover, a:active {
 }
 
 h1 a:link, h1 a:visited,
-nav a:link, nav a:visited
-{
+nav a:link, nav a:visited {
   color: #aaa;
 }
 
@@ -77,15 +76,16 @@ hr {
   text-align: center;
 }
 
+.photos img, .photo img {
+  max-width: 100%;
+  max-height: 90vh;
+}
+
 /* Photo list page */
 .subtitle {
   font-size: small;
   font-style: italic;
   margin-bottom: 2em;
-}
-
-.photos img {
-  width: 100%;
 }
 
 .photos figure {
@@ -96,34 +96,59 @@ hr {
   margin: 0;
 }
 
+.photos .widget {
+  margin: 0.5em auto;
+}
+
 /* Photo page */
 .photo main {
   max-width: 100%;
+  padding: 0;
 }
 
-.widget {
-  margin: 1em auto;
+.photo figcaption, .photo .meta {
+  padding: 0 1em;
+}
+
+.photo .widget {
   display: table;
+  margin: 0 auto;
 }
 
 .photo img {
+  display: table-cell;
+}
+
+.sidenav {
+  display: none;
+}
+
+.footnav {
+  display: table;
   width: 100%;
-  max-height: 90vh;
-  display: table-cell;
-}
-
-.arrow {
-  display: table-cell;
-  vertical-align: middle;
+  margin: 0 auto;
   font-size: x-large;
-  padding: 0.5em;
 }
 
-.arrow a:link, .arrow a:visited {
+.footnav .left {
+  display: table-cell;
+  text-align: left;
+  padding-left: 0.5em;
+}
+
+.footnav .right {
+  display: table-cell;
+  text-align: right;
+  padding-right: 0.5em;
+}
+
+.footnav a:link, .footnav a:visited,
+.sidenav a:link, .sidenav a:visited {
   color: #999;
 }
 
-.arrow a:hover, .arrow a:active {
+.footnav a:hover, .footnav a:active,
+.sidenav a:hover, .sidenav a:active {
   text-decoration: none;
   color: #ccc;
 }
@@ -140,8 +165,23 @@ hr {
 }
 
 /* Wide screen layout */
-@media screen and (min-width: 40em) {
-  .arrow {
-    font-size: xx-large;
+@media screen and (min-width: 42em) {
+  .sidenav {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0.5em;
+    font-size: x-large;
+  }
+
+  .footnav {
+    display: none;
+  }
+
+  .photo .widget {
+    margin: 1em auto;
+  }
+
+  .photo main {
+    padding: 0 1em;
   }
 }

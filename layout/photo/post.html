@@ -1,9 +1,13 @@
 <main>
   <figure>
     <div class="widget">
-      <div class="arrow"><a href="{{ prev }}">&laquo;</a></div>
-      <img src="{{ photo }}" alt="">
-      <div class="arrow"><a href="{{ next }}">&raquo;</a></div>
+      <div class="sidenav"><a href="{{ prev }}">&laquo;</a></div>
+      <img src="{{ photo }}" alt="Photo {{ index }}">
+      <div class="sidenav"><a href="{{ next }}">&raquo;</a></div>
+    </div>
+    <div class="footnav">
+      <div class="left"><a href="{{ prev }}">&laquo;</a></div>
+      <div class="right"><a href="{{ next }}">&raquo;</a></div>
     </div>
     <figcaption>{{ story }}</figcaption>
   </figure>
