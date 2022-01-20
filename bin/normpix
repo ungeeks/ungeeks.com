@@ -1,0 +1,77 @@
+#!/bin/sh
+exif_date()
+{
+    exiftool -d '%Y%m%d_%H%M%S' -DateTimeOriginal "$1" | cut -d: -f2 | tr -d ' '
+}
+
+
+dsc_name()
+{
+    printf '%s' "$1" | cut -d . -f 1
+}
+
+
+img_name()
+{
+    printf '%s' "$1" | sed 's/IMG_........_......\(.*\)\..*/IMG_\1/'
+}
+
+normalize()
+{
+    dir=$(dirname "$1")
+    file=$(basename "$1")
+    date=$(exif_date "$1")
+
+    case "$file" in
+        DSC*)
+            name=$(dsc_name "$file")
+            ;;
+        IMG*)
+            name=$(img_name "$file")
+            ;;
+        *)
+            log WARNING: Filename of \""$1"\" must begin with DSC or IMG.
+            return
+            ;;
+    esac
+
+    new_path="$dir/${date}_${name}.jpg"
+    printf 'mv "%s" "%s"\n' "$1" "$new_path"
+}
+
+log()
+{
+    printf "%s\n" "$*" >&2
+}
+
+quit()
+{
+    err "$*"
+    exit 1
+}
+
+main()
+{
+    set -e
+
+    log This script does not rename files.
+    log This script only generates a runner script that renames files.
+
+    find . -iname "*.jpg" | while read -r path
+    do
+        normalize "$path"
+    done
+}
+
+
+runner=run.sh
+time main | tee "$runner"
+
+log
+log Created "$runner" to normalize $(wc -l < "$runner") files
+log Review the script and execute: "sh -x $runner"
+log
+
+# To fix dates, use this command:
+#
+# exiftool -v -AllDates+=12:30 2017102[89]*_DSC_*.jpg

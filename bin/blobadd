@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+
+
+import argparse
+import os
+import glob
+import sys
+import shutil
+import time
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Add album to blob')
+    parser.add_argument('src', nargs='?', default='.', help='Source path')
+    parser.add_argument('-b', '--blob', default='~/blob/albums',
+                        help='Blob path')
+    parser.add_argument('-t', '--trash', default='~/blob/trash',
+                        help='Trash path')
+    parser.add_argument('-H', '--height', default=1000, help='Image height')
+    parser.add_argument('-q', '--quality', default=90, help='Image quality')
+    args = parser.parse_args()
+
+    args.src = os.path.abspath(os.path.expanduser(args.src))
+    args.blob = os.path.abspath(os.path.expanduser(args.blob))
+    args.trash = os.path.abspath(os.path.expanduser(args.trash))
+
+    add_album(args.src, args.blob, args.trash, args.height, args.quality)
+
+
+def add_album(src_path, blob_path, trash_path, height, quality):
+    dst_path = os.path.join(blob_path, os.path.basename(src_path))
+
+    if os.path.exists(dst_path):
+        log('Trashing', dst_path, '...')
+        trash(dst_path, trash_path)
+
+    log('Creating', dst_path, '...')
+    os.makedirs(dst_path)
+
+    src_file_paths = sorted(
+        glob.glob(os.path.join(src_path, '*.png')) +
+        glob.glob(os.path.join(src_path, '*.jpg'))
+    )
+
+    for src_file_path in src_file_paths:
+        filename = os.path.basename(src_file_path)
+        dst_file_path = os.path.join(dst_path, filename)
+        add_image(src_file_path, dst_file_path)
+
+    log('Done')
+
+
+def trash(path, trash_path):
+    os.makedirs(trash_path, exist_ok=True)
+    filename = (os.path.basename(path) + '-' +
+                time.strftime('%Y%m%d-%H%M%S'))
+    trash_path = os.path.join(trash_path, filename)
+    shutil.move(path, trash_path)
+
+
+def add_image(src_file_path, dst_file_path):
+    log('Adding', dst_file_path, '...')
+
+
+def err(*args):
+    log('error:', *args)
+    sys.exit(1)
+
+
+def log(*args):
+    print(' '.join(args), file=sys.stderr)
+
+
+if __name__ == '__main__':
+    main()

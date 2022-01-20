@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import glob
+import err
+
+import parsers
+
+
+def main():
+    # Parse CLI arguments.
+    argparser = argparse.ArgumentParser(description='Parse captions')
+    argparser.add_argument('dir', nargs='?', default='.',
+                           help='Album directory path')
+    args = argparser.parse_args()
+
+    # Read captions.
+    filename = os.path.join(args.dir, 'index.txt')
+    meta_list = parsers.parse_captions(filename)
+
+    # Validate captions.
+    validate_filenames(meta_list, args.dir)
+
+    # Print captions.
+    import pprint
+    print('meta_list:')
+    print()
+    pprint.pprint(meta_list, indent=4)
+    print()
+    for meta in meta_list:
+        print(meta['filename'])
+        print(meta['caption'])
+        if 'tags' in meta:
+            print(meta['tags'])
+        print()
+
+
+def validate_filenames(meta_list, dirname):
+    pattern = os.path.join(dirname, '*.jpg')
+    actual_filenames = sorted(glob.glob('*.jpg'))
+
+    for meta, af in zip(meta_list, actual_filenames):
+        mf = meta['filename']
+        if mf != af:
+            err.errline(meta['lno'], mf, 'Expected ' + af)
+
+    mf_len = len(meta_list)
+    af_len = len(actual_filenames)
+
+    if af_len > mf_len:
+        diff = af_len - mf_len
+        err.err('{} missing from captions (total {} missing)'.
+                format(actual_filenames[-diff], diff))
+
+
+if __name__ == '__main__':
+    main()
